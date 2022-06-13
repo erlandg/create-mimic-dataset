@@ -41,10 +41,70 @@ The above code should provide the following files:
     Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with vital signs properties (max, min, median, mean, first, last) of *heart_rate, sbp, dbp, mbp, sbp_ni, dbp_ni, mbp_ni, resp_rate, temperature, spo2, glucose*.
 * `labevents.csv`  
     Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with lab test properties (max, min, median, mean, first, last) of filtered lab results (names listed in the thesis).
+    
+### Downloading CXR data
+
+Now, using the paths provided in `images.csv` we may download image and radiology data to local storage from <https://physionet.org/content/mimic-cxr/2.0.0/>. This is done locally — rather than in Colab — due to the storage space required.
+
+## Extracting graph data
+
+...
 
 ## Preprocessing and combining the data
 
-...
+### Preparation
+
+Having files `vital_signs.csv`, `labevents.csv`, `graph.npy`, `graph_hadm.csv`, and the CXR images, we may pre-process and combine the graph multi-modal dataset. The folder structure should be as follows:  
+
+```
+create-mimic-dataset
+│   combine_data.py
+│
+└───physionet.org
+│   │
+│   └───mimic-cxr
+│       │   
+│       └───2.0.0  
+│           │   
+│           └───...  
+│           │   │  *image_path*.dcm  
+│   
+└───tables
+│   │   images.csv
+│   │   graph.npy
+│   │   graph_hadm.csv
+│   │   vital_signs.csv
+│   │   labevents.csv
+│   │   labels.csv
+│   │   ...
+│   
+│   ...
+```
+
+### Combining
+
+Preprocess and combine the data by running from source folder (*create-mimic-dataset* in the structure above) as such :  
+
+```bash
+python3 combine_data.py tables/images.csv tables/graph.npy tables/vital_signs.csv tables/labevents.csv tables/labels.csv
+```
+
+The above yields :
+* *tables/dataset.npz*
+* *tables/dataset_images.npz*
+* *tables/dataset_no_images.npz*  
+
+Each containing elements
+```
+n_views: The number of views, V
+labels: Integer labels. Shape (n,)  
+graph: Dense affinity matrix. Shape (n, n)
+view_0: Data for first view. Shape (n, ...)  
+  .  
+  .  
+  .  
+view_V: Data for view V. Shape (n, ...)  
+```
 
 
 
