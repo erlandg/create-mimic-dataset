@@ -379,7 +379,7 @@ def main():
         title = f"Spectral embedding, labelled",
         alpha = 0.3,
     )
-    np.save(f"{str(dir_path)}/graph_supervised.npy", SE.affinity_matrix_, allow_pickle=True)
+    np.save(f"{str(dir_path)}/graph_supervised_nonoise.npy", SE.affinity_matrix_, allow_pickle=True)
     # ~70% accuracy
     print(kmeans(A_trans, labels[idx_], print_out=False, return_acc=True))
     plot(
