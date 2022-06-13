@@ -19,7 +19,7 @@ Wait for access to the databases (this might take a few days).
 ### Getting access in Google Cloud
 
 1. Access MIMIC-IV and MIMIC-CXR in Google Cloud : <https://mimic.mit.edu/docs/gettingstarted/cloud/>
-2. Create a project at : <https://console.cloud.google.com/>
+2. Create a project (<https://console.cloud.google.com/>) which is to be used in the Colab project in the following section.
 
 
 # Creating the Graph Multi-modal Dataset
