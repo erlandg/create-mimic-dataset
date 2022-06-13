@@ -55,7 +55,8 @@ The folder structure should be as follows:
 ```
 create-mimic-dataset
 │   combine_data.py
-│
+│   finding_graph.py
+│  
 └───physionet.org
 │   │
 │   └───mimic-cxr
