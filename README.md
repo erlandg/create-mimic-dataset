@@ -24,9 +24,9 @@ Wait for access to the databases (this might take a few days).
 
 # Creating the Graph Multi-modal Dataset
 
-## Google Colab link (`create_db.ipynb`)
+## Extracting raw data (`create_db.ipynb`)
 
-<https://colab.research.google.com/drive/1tkHdUwXzzp8UD3vQT9T__Zlhl0VFdzML?usp=sharing>
+Google Colab link : <https://colab.research.google.com/drive/1tkHdUwXzzp8UD3vQT9T__Zlhl0VFdzML?usp=sharing>
 
 The above code should provide the following files:  
 * `most_common_diagnoses.csv`  
@@ -41,5 +41,12 @@ The above code should provide the following files:
     Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with vital signs properties (max, min, median, mean, first, last) of *heart_rate, sbp, dbp, mbp, sbp_ni, dbp_ni, mbp_ni, resp_rate, temperature, spo2, glucose*.
 * `labevents.csv`  
     Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with lab test properties (max, min, median, mean, first, last) of filtered lab results (names listed in the thesis).
+
+## Preprocessing and combining the data
+
+...
+
+
+
 
 
