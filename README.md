@@ -14,7 +14,7 @@ The MIMIC databases are publicly available but requires some certification to ac
     * <https://physionet.org/content/mimiciv/2.0/>
     * <https://physionet.org/content/mimic-cxr/2.0.0/>
 
-Wait for access (this might take a few days).
+Wait for access to the databases (this might take a few days).
 
 ### Getting access in Google Cloud
 
@@ -22,8 +22,24 @@ Wait for access (this might take a few days).
 2. Create a project at : <https://console.cloud.google.com/>
 
 
+# Creating the Graph Multi-modal Dataset
+
 ## Google Colab link (`create_db.ipynb`)
 
 <https://colab.research.google.com/drive/1tkHdUwXzzp8UD3vQT9T__Zlhl0VFdzML?usp=sharing>
+
+The above code should provide the following files:  
+* `most_common_diagnoses.csv`  
+    Lists the number of cases of the `N_diagnoses` most common unique diagnosis names. Diagnosis name is used rather than ICD codes as both ICD-9 and ICD-10 are used.
+* `labels.csv`  
+    Provides labels of `subject_id` and `hadm_id` and their associated labels.
+* `hadm_diags.csv`  
+    Provides BoW representations of patient diagnoses by `hadm_id`.
+* `images.csv`  
+    Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with DICOM date and time, as well as paths to images and radiology reports.
+* `vital_signs.csv`  
+    Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with vital signs properties (max, min, median, mean, first, last) of *heart_rate, sbp, dbp, mbp, sbp_ni, dbp_ni, mbp_ni, resp_rate, temperature, spo2, glucose*.
+* `labevents.csv`  
+    Associates `subject_id`, `hadm_id`, `stay_id`, and `dicom_id` with lab test properties (max, min, median, mean, first, last) of filtered lab results (names listed in the thesis).
 
 
