@@ -12,6 +12,8 @@ from sklearn.cluster import SpectralClustering
 from pathlib import Path
 import re
 
+from sys import argv
+
 
 DATA_ROOT = "physionet.org/files/mimic-cxr/2.0.0/"
 REPLACE_TABLE = {
@@ -312,7 +314,7 @@ def plot_distributions(input_dict, fname):
 
 
 def main():
-    dir_path = Path("better_tables")
+    dir_path = Path(argv[1])
     labels = pd.read_csv(dir_path / "labels.csv")
     labels = labels.set_index("hadm_id")["long_title"]
 
