@@ -48,7 +48,7 @@ Now, using the paths provided in `images.csv` we may download image and radiolog
 
 1. Running `python3 extract_table.py images.csv` will yield a .txt file of all download paths, *.paths.txt*.
 2. [Optional] Run `python3 confirm_database.py .paths.txt` to find the paths, in *.err_paths.txt*, that do not already exist locally.
-3. Create file `credentials` defined as such (using your physionet account details):  
+3. Create a file `credentials` defined as such (with physionet account details):  
   ```
   USER=<INSERT_USERNAME_HERE>  
   PASS=<INSERT_PASSWORD_HERE>  
