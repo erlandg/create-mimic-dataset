@@ -2,7 +2,6 @@
 .vscode/
 .devcontainer/
 
-tables/
 physionet.org/
 credentials
 
