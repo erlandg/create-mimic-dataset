@@ -44,7 +44,12 @@ The above code should provide the following files:
     
 ### Downloading CXR data
 
-Now, using the paths provided in `images.csv` we may download image and radiology data to local storage from <https://physionet.org/content/mimic-cxr/2.0.0/>. This is done locally — rather than in Colab — due to the storage space required.
+Now, using the paths provided in `images.csv` we may download image and radiology data to local storage from <https://physionet.org/content/mimic-cxr/2.0.0/>. This is done locally — rather than in Colab — due to the storage space required.  
+
+1. Running `python3 extract_table.py images.csv` will yield a .txt file of all download paths, *.paths.txt*.
+2. [Optional] Run `python3 confirm_database.py .paths.txt` to find the paths, in *.err_paths.txt*, that do not already exist locally.
+3. Edit `download.sh` by inserting username and password for *INSERT_USERNAME_HERE* and *INSERT_PASSWORD_HERE* according to physionet account details.
+4. Run `bash download.sh .err_paths.txt` or `bash download.sh .paths.txt` to download files from PhysioNet.org.
 
 ## Preprocessing and combining the data
 
