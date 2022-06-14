@@ -89,20 +89,20 @@ To extract graphs we run :
 ```bash
 python3 finding_graph.py tables
 ```
-yielding multiple graphs and one `graph_hadm.csv` associating the indices of the graph to their `hadm_id`. We rename the desired graph (for the unsupervised case, *tables/graph_unsupervised.npy*) as `graph.npy`. The folder structure should now comply to the one previously described.
+yielding multiple graphs and one `graph_hadm.csv` associating the indices of the graph to their `hadm_id`. We rename the desired graph (for the unsupervised case, *./tables/graph_unsupervised.npy*) as `graph.npy`. The folder structure should now comply to the one previously described.
 
 ### Combining
 
-Having files `vital_signs.csv`, `labevents.csv`, `graph.npy`, `graph_hadm.csv`, and the CXR images, we may pre-process and combine the graph multi-modal dataset. Preprocess and combine the data by running from source folder (*create-mimic-dataset* in the structure above) as such :  
+Having files `vital_signs.csv`, `labevents.csv`, `graph.npy`, `graph_hadm.csv`, and the CXR images, we may pre-process and combine the graph multi-modal dataset by running (from folder *create-mimic-dataset/*) :  
 
 ```bash
 python3 combine_data.py tables/images.csv tables/graph.npy tables/vital_signs.csv tables/labevents.csv tables/labels.csv
 ```
 
 The above yields :
-* *tables/dataset.npz*
-* *tables/dataset_images.npz*
-* *tables/dataset_no_images.npz*  
+* *./tables/dataset.npz*
+* *./tables/dataset_images.npz*
+* *./tables/dataset_no_images.npz*  
 
 Each containing elements
 ```
