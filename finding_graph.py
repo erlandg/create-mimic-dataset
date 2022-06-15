@@ -28,7 +28,7 @@ REPLACE_TABLE = {
     r"_+": "",
     r"\(": "",
     r"\)": "",
-    r"[A-Z][A-Z]+": "",
+    r"[A-Z][A-Z]+": "", # Replace capital words due to the structure of radiology reports
     r"[0-9]": "",
 }
 
@@ -67,6 +67,7 @@ def read_text(path):
         except FileNotFoundError:
             pass
 
+
 def get_binary_diff(A, B):
     a_in_b = A.index.isin(B.index)
     b_in_a = B.index.isin(A.index)
@@ -77,24 +78,13 @@ def get_binary_diff(A, B):
     b = b.append(pd.Series(0., index=A[~a_in_b].index)).sort_index()
     b = b.append(pd.Series(0., index=B[~b_in_a].index)).sort_index()
     return (a - b).sort_values(ascending = False)
-
-
-# def weight_sentence(text, weights):
-#     text = text.split(" ")
-#     w = []
-#     for t in text:
-#         try:
-#             w.append(weights[t.lower()])
-#         except KeyError:
-#             print("hmm..")
-#             pass
-#     return sum(w) / max(len(w), 1)
     
 
 def weight_sentence(series_format, text, weight):
     words, counts = np.unique(text.lower().split(" "), return_counts = True)
     series_format[words] = counts
     return series_format
+
 
 def get_text_weights(data, weights, words, out_format = "sum"):
     words_format = pd.Series(0, index = words)
@@ -104,6 +94,25 @@ def get_text_weights(data, weights, words, out_format = "sum"):
         return (out_weights * weights.values.reshape(1,-1)).sum(1)
     elif out_format == "array":
         return out_weights * weights.values.reshape(1,-1)
+
+
+def get_multiclass_weights(data, counts):
+    counts = pd.DataFrame(counts)
+    diff = counts[~counts.isnull().any(axis=1)]
+    diff = diff.append(pd.DataFrame(0, index=counts.index[~counts.index.isin(diff.index)], columns=diff.columns))
+    out_weights = pd.DataFrame(0, index=diff.index, columns=diff.columns)
+    for diag, col in diff.iteritems():
+        for _, col2 in diff.loc[:,~diff.columns.isin([diag])].iteritems():
+            out_weights[diag] = out_weights[diag] + (col - col2)
+
+    weighted_reports = pd.DataFrame(0, index = data.index, columns = out_weights.columns)
+    words_format = pd.Series(0, index = out_weights.index)
+    for diag in out_weights.columns:
+        out_weights_ = data["text"].apply(lambda x: weight_sentence(words_format.copy(), x, out_weights[diag]))
+        out_weights_ = out_weights_.groupby(level=0).mean()
+        weighted_reports[diag] = (out_weights_ * out_weights[diag].values.reshape(1,-1)).sum(1)
+    
+    return weighted_reports
 
 
 def plot(X, labels, fname, title = None, **sns_kwargs):
@@ -314,6 +323,7 @@ def plot_distributions(input_dict, fname):
 
 
 def main():
+    assert len(argv) > 1
     dir_path = Path(argv[1])
     labels = pd.read_csv(dir_path / "labels.csv")
     labels = labels.set_index("hadm_id")["long_title"]
@@ -321,41 +331,42 @@ def main():
     images = pd.read_csv(dir_path / "images.csv")
     images = images.set_index("dicom_id")[["hadm_id", "study_path"]]
 
-    # hadm_order = pd.read_csv(dir_path / "hadm_order.csv", header=None)[0]
-
     labevents = pd.read_csv(dir_path / "labevents.csv")
     lab_hadm_id = labevents["dicom_id"].apply(lambda id: match_hadm_id(images, id))
     labevents = labevents[lab_hadm_id.notna()].drop(columns="dicom_id")
     labevents.index = lab_hadm_id[lab_hadm_id.notna()].astype(int)
     labevents = labevents.groupby(level=0).mean()
     labevents = normalise(labevents)
-    # lab_embedding = SpectralEmbedding(n_components=1, affinity="nearest_neighbors").fit_transform(labevents.values)
-    lab_embedding = pca(labevents.values, 1)
 
 
-    vitalsigns = pd.read_csv(dir_path / "vitalsigns.csv")
+    vitalsigns = pd.read_csv(dir_path / "vital_signs.csv")
     chart_hadm_id = vitalsigns["dicom_id"].apply(lambda id: match_hadm_id(images, id))
     vitalsigns = vitalsigns[chart_hadm_id.notna()].drop(columns="dicom_id")
     vitalsigns.index = chart_hadm_id[chart_hadm_id.notna()].astype(int)
     vitalsigns = vitalsigns.groupby(level=0).mean()
     vitalsigns = normalise(vitalsigns)
-    # chart_embedding = SpectralEmbedding(n_components=1, affinity="nearest_neighbors").fit_transform(vitalsigns.values)
-    chart_embedding = pca(vitalsigns.values, 1)
 
     classes = labels.unique()
+    assert len(classes) > 1
+    binary = len(classes) == 2
 
 
     counts, texts = count_split(labels, images)
 
+    if binary:
+        # Assuming binary differences - Supervised
+        diff = get_binary_diff(counts[classes[0]], counts[classes[1]])
+        words = diff.index.values
+        cl_diff = {
+            classes[0]: diff[diff > 0],
+            classes[1]: diff[diff < 0].sort_values()
+        }
+        weights = get_text_weights(texts, diff, words, out_format="sum")
+    else:
+        weights = get_multiclass_weights(texts, counts)
+    print()
+    
 
-    # Assuming class differences - Supervised
-    diff = get_binary_diff(counts[classes[0]], counts[classes[1]])
-    words = diff.index.values
-    cl_diff = {
-        classes[0]: diff[diff > 0],
-        classes[1]: diff[diff < 0].sort_values()
-    }
-    weights = get_text_weights(texts, diff, words, out_format="sum")
     # keep_ratio = .9
     # importance = weights.sum().abs().sort_values(ascending=False).cumsum() / weights.sum().abs().sum()
     # imp_cols = importance.iloc[:(importance - keep_ratio).abs().argmin()].index
