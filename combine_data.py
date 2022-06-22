@@ -118,7 +118,7 @@ def main(fnames = sys.argv[1:]):
 
     graph_fn = fnames[1]
     try:
-        graph_hadm = pd.read_csv(f"{folder_name}/graph_hadm.csv", header=None)[0]
+        graph_hadm = pd.read_csv(f"{'/'.join(graph_fn.split('/')[:-1])}/graph_hadm.csv", header=None)[0]
         dicom_ids = dicom_ids[dicom_ids.isin(dfs[0][dfs[0]["hadm_id"].isin(graph_hadm)]["dicom_id"])]
     except FileNotFoundError:
         if graph_fn.split(".")[-1] == "npy":
@@ -218,21 +218,6 @@ def main(fnames = sys.argv[1:]):
         view_0 = view_0,
         view_1 = view_1,
         view_2 = view_2
-    )
-    np.savez(
-        f"{folder_name}/dataset_no_images.npz",
-        n_views = 2,
-        labels = dfs[-1].values,
-        graph = (graph + graph.T)/2,
-        view_0 = view_1,
-        view_1 = view_2
-    )
-    np.savez(
-        f"{folder_name}/dataset_images.npz",
-        n_views = 1,
-        labels = dfs[-1].values,
-        graph = (graph + graph.T)/2,
-        view_0 = view_0,
     )
     print()
 

@@ -1,6 +1,8 @@
 .DS_Store
 .vscode/
 .devcontainer/
+__pycache__/
+**/__pycache__/
 
 physionet.org/
 credentials
